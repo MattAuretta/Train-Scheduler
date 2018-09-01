@@ -12,6 +12,28 @@
  //Create variable for database
  var database = firebase.database();
 
+ // FirebaseUI config.
+ var uiConfig = {
+     signInSuccessUrl: 'https://mattauretta.github.io/Train-Scheduler/',
+     signInOptions: [
+         // Leave the lines as is for the providers you want to offer your users.
+         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+     ],
+     // tosUrl and privacyPolicyUrl accept either url string or a callback
+     // function.
+     // Terms of service url/callback.
+     tosUrl: '<your-tos-url>',
+     // Privacy policy url/callback.
+     privacyPolicyUrl: function () {
+         window.location.assign('<your-privacy-policy-url>');
+     }
+ };
+
+ // Initialize the FirebaseUI Widget using Firebase.
+ var ui = new firebaseui.auth.AuthUI(firebase.auth());
+ // The start method will wait until the DOM is loaded.
+ ui.start('#firebaseui-auth-container', uiConfig);
+
  //Button for adding trains
  $("#add-train").on("click", function (event) {
      event.preventDefault();
@@ -39,11 +61,11 @@
      $("#frequency-input").val("");
  });
 
-//Function holding Firebase event listener for child added
+ //Function holding Firebase event listener for child added
  function displayTrains() {
      //Create Firebase event for adding train to the database and a row to the table
      database.ref().on("child_added", function (childSnapshot) {
-        //  console.log(childSnapshot.val());
+         //  console.log(childSnapshot.val());
 
          //Store everything into a variable
          var trainName = childSnapshot.val().name;
@@ -62,10 +84,12 @@
 
          //Calculate minutes away
          var minutesAway = trainFrequency - timeRemainder;
-        //  console.log("Minutes away: " + minutesAway)
+         //  console.log("Minutes away: " + minutesAway)
 
          //Calculate next arrival
          var nextArrival = moment().add(minutesAway, "minutes")
+
+        //  var deleteButton = $("<button class='delete'>").text("X");
 
          //Create new row
          var newRow = $("<tr>").append(
@@ -74,14 +98,24 @@
              $("<td>").text(trainFrequency),
              $("<td>").text(moment(nextArrival).format("hh:mm")),
              $("<td>").text(minutesAway),
+            //  $("<td>").html(deleteButton)
          );
+
+         newRow.addClass("new-row");
 
          // Append the new row to the table
          $("#train-table-body").append(newRow);
      });
  }
 
-//Function that will update the table
+//  $(document).on("click", "button.delete", function () {
+//      event.preventDefault();
+//      console.log("test")
+//      //   $(this).parents(".new-row").remove()
+//      database.ref("/name/").child(name).remove();
+//  })
+
+ //Function that will update the table
  function updateTime() {
      //Clear table
      $("#train-table-body").empty();
@@ -89,10 +123,10 @@
      displayTrains();
  }
 
-//Calling updateTime function
+ //Calling updateTime function
  updateTime();
 
- //Set interval to run updateTime every 100ms
+ //  Set interval to run updateTime every 100ms
  setInterval(function () {
      updateTime();
- }, 100);
+ }, 500);
