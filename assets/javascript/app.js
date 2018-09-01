@@ -39,48 +39,60 @@
      $("#frequency-input").val("");
  });
 
- //Create Firebase event for adding train to the database and a row to the table
- database.ref().on("child_added", function (childSnapshot) {
-     console.log(childSnapshot.val());
+//Function holding Firebase event listener for child added
+ function displayTrains() {
+     //Create Firebase event for adding train to the database and a row to the table
+     database.ref().on("child_added", function (childSnapshot) {
+        //  console.log(childSnapshot.val());
 
-     //Store everything into a variable
-     var trainName = childSnapshot.val().name;
-     var trainDestination = childSnapshot.val().destination;
-     var trainTime = childSnapshot.val().time;
-     var trainFrequency = childSnapshot.val().frequency;
+         //Store everything into a variable
+         var trainName = childSnapshot.val().name;
+         var trainDestination = childSnapshot.val().destination;
+         var trainTime = childSnapshot.val().time;
+         var trainFrequency = childSnapshot.val().frequency;
 
-     //Log train info
-     console.log(trainName);
-     console.log(trainDestination);
-     console.log(trainTime);
-     console.log("Frequency: " + trainFrequency);
+         // First Time (pushed back 1 year to make sure it comes before current time)
+         var firstTimeConverted = moment(trainTime, "HH:mm").subtract(1, "years");
 
-     // First Time (pushed back 1 year to make sure it comes before current time)
-     var firstTimeConverted = moment(trainTime, "HH:mm").subtract(1, "years");
+         // Difference between the times
+         var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
 
-     // Difference between the times
-     var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+         // Time apart (remainder)
+         var timeRemainder = diffTime % trainFrequency;
 
-     // Time apart (remainder)
-     var timeRemainder = diffTime % trainFrequency;
+         //Calculate minutes away
+         var minutesAway = trainFrequency - timeRemainder;
+        //  console.log("Minutes away: " + minutesAway)
 
-     //Calculate minutes away
-     var minutesAway = trainFrequency - timeRemainder;
-     console.log("Minutes away: " + minutesAway)
+         //Calculate next arrival
+         var nextArrival = moment().add(minutesAway, "minutes")
 
-     //Calculate next arrival
-     var nextArrival = moment().add(minutesAway, "minutes")
-     
-     //Create new row
-     var newRow = $("<tr>").append(
-         $("<td>").text(trainName),
-         $("<td>").text(trainDestination),
-         $("<td>").text(trainFrequency),
-         $("<td>").text(moment(nextArrival).format("hh:mm")),
-         $("<td>").text(minutesAway),
-     );
+         //Create new row
+         var newRow = $("<tr>").append(
+             $("<td>").text(trainName),
+             $("<td>").text(trainDestination),
+             $("<td>").text(trainFrequency),
+             $("<td>").text(moment(nextArrival).format("hh:mm")),
+             $("<td>").text(minutesAway),
+         );
 
-     // Append the new row to the table
-     $("#train-table-body").append(newRow);
+         // Append the new row to the table
+         $("#train-table-body").append(newRow);
+     });
+ }
 
- });
+//Function that will update the table
+ function updateTime() {
+     //Clear table
+     $("#train-table-body").empty();
+     //Load updated table
+     displayTrains();
+ }
+
+//Calling updateTime function
+ updateTime();
+
+ //Set interval to run updateTime every 100ms
+ setInterval(function () {
+     updateTime();
+ }, 100);
