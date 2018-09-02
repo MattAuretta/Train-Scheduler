@@ -37,6 +37,8 @@
  firebase.auth().onAuthStateChanged(function (user) {
      if (user) {
          console.log("There is a user");
+         //Hide sign in div
+         $("firebaseui-auth-container").hide();
          //Button for adding trains
          $("#add-train").on("click", function (event) {
              event.preventDefault();
@@ -132,7 +134,8 @@
          //  Set interval to run updateTime every 100ms
          setInterval(function () {
              updateTime();
-         }, 500);
+         }, 100);
+
      } else {
          console.log("There is no user");
      }
