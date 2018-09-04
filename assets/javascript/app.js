@@ -38,7 +38,7 @@
      if (user) {
          console.log("There is a user");
          //Hide sign in div
-         $("firebaseui-auth-container").hide();
+         $("#firebaseui-auth-container").empty();
          //Button for adding trains
          $("#add-train").on("click", function (event) {
              event.preventDefault();
