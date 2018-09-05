@@ -40,9 +40,9 @@
          //Hide sign in div
          $("#firebaseui-auth-container").empty();
          //Create logout button
-         var logoutButton = $("<button>Logout</button>").attr("id", "logout-button")
+         var logoutButton = $("<button>Logout</button>").attr({id: "logout-button", type: "button"});
          //Add bootstrap classes to logout button
-         $("#logout-button").addClass("btn btn-warning");
+         logoutButton.addClass("btn btn-warning");
          //Append logout button to top of page
          $("#firebaseui-auth-container").append(logoutButton);
          //On click of logout button
