@@ -42,12 +42,16 @@
          //Create logout button
          var logoutButton = $("<button>Logout</button>")
          $("#firebaseui-auth-container").append(logoutButton).attr("id", "logout-button");
+         //Add bootstrap classes to logout button
+         $("#logout-button").addClass("btn btn-warning");
          //On click of logout button
          $("#logout-button").on("click", function (event) {
              event.preventDefault();
+             //Signout the user
              firebase.auth().signOut().then(function () {
                  console.log("Sign-out successful.")
-             
+                 //Refresh the page
+                 location.reload();
              });
          })
          //Button for adding trains

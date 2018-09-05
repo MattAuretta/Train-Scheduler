@@ -1,0 +1,12 @@
+body {
+    background-color: #c6e6fa;
+}
+
+table {
+    background-color: #fff;
+}
+
+#logout-button {
+    float: right;
+    margin-right: 2em;
+}
