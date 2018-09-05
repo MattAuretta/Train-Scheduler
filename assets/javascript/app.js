@@ -39,6 +39,17 @@
          console.log("There is a user");
          //Hide sign in div
          $("#firebaseui-auth-container").empty();
+         //Create logout button
+         var logoutButton = $("<button>Logout</button>")
+         $("#firebaseui-auth-container").append(logoutButton).attr("id", "logout-button");
+         //On click of logout button
+         $("#logout-button").on("click", function (event) {
+             event.preventDefault();
+             firebase.auth().signOut().then(function () {
+                 console.log("Sign-out successful.")
+             
+             });
+         })
          //Button for adding trains
          $("#add-train").on("click", function (event) {
              event.preventDefault();
@@ -70,7 +81,6 @@
          function displayTrains() {
              //Create Firebase event for adding train to the database and a row to the table
              database.ref().on("child_added", function (childSnapshot) {
-                 //  console.log(childSnapshot.val());
 
                  //Store everything into a variable
                  var trainName = childSnapshot.val().name;
@@ -89,12 +99,9 @@
 
                  //Calculate minutes away
                  var minutesAway = trainFrequency - timeRemainder;
-                 //  console.log("Minutes away: " + minutesAway)
 
                  //Calculate next arrival
                  var nextArrival = moment().add(minutesAway, "minutes")
-
-                 //  var deleteButton = $("<button class='delete'>").text("X");
 
                  //Create new row
                  var newRow = $("<tr>").append(
@@ -103,7 +110,6 @@
                      $("<td>").text(trainFrequency),
                      $("<td>").text(moment(nextArrival).format("hh:mm")),
                      $("<td>").text(minutesAway),
-                     //  $("<td>").html(deleteButton)
                  );
 
                  newRow.addClass("new-row");
@@ -112,13 +118,6 @@
                  $("#train-table-body").append(newRow);
              });
          }
-
-         //  $(document).on("click", "button.delete", function () {
-         //      event.preventDefault();
-         //      console.log("test")
-         //      //   $(this).parents(".new-row").remove()
-         //      database.ref("/name/").child(name).remove();
-         //  })
 
          //Function that will update the table
          function updateTime() {
